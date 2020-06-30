@@ -19,17 +19,22 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 
 	"github.com/pwhelan/dm/machine"
 
 	"github.com/spf13/cobra"
 )
 
+func detectShell() string {
+	return path.Base(os.Getenv("SHELL"))
+}
+
 // envCmd represents the env command
 var envCmd = &cobra.Command{
 	Use:   "env",
 	Short: "Generate env config for a machine.",
-	Long: `WIP ...`,
+	Long:  `WIP ...`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var mach machine.Machine
 		file, err := os.Stat(fmt.Sprintf("%s/%s",
@@ -40,12 +45,24 @@ var envCmd = &cobra.Command{
 		if err := mach.Read(file); err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("set -gx DOCKER_TLS_VERIFY \"1\";\n")
-		fmt.Printf("set -gx DOCKER_HOST \"%s\";\n", mach.URL)
-		fmt.Printf("set -gx DOCKER_CERT_PATH \"%s/%s\";\n", 
-			"/home/pwhelan/.config/dm/machines", file.Name())
-		fmt.Printf("set -gx DOCKER_MACHINE_NAME \"%s\";\n", 
-			mach.Name)
+		switch detectShell() {
+		case "fish":
+			fmt.Printf("set -gx DOCKER_TLS_VERIFY \"1\";\n")
+			fmt.Printf("set -gx DOCKER_HOST \"%s\";\n", mach.URL)
+			fmt.Printf("set -gx DOCKER_CERT_PATH \"%s/%s\";\n",
+				"/home/pwhelan/.config/dm/machines", file.Name())
+			fmt.Printf("set -gx DOCKER_MACHINE_NAME \"%s\";\n",
+				mach.Name)
+		case "bash":
+			fmt.Printf("export DOCKER_TLS_VERIFY=\"1\";\n")
+			fmt.Printf("export DOCKER_HOST=\"%s\";\n", mach.URL)
+			fmt.Printf("export DOCKER_CERT_PATH=\"%s/%s\";\n",
+				"/home/pwhelan/.config/dm/machines", file.Name())
+			fmt.Printf("export DOCKER_MACHINE_NAME=\"%s\";\n",
+				mach.Name)
+		default:
+			log.Fatal("unable to detect shell")
+		}
 	},
 }
 
