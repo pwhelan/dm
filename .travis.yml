@@ -1,0 +1,22 @@
+language: go
+
+go:
+  - 1.14
+
+env:
+  - GOOS=darwin OS=osx
+  - GOOS=windows OS=win64
+  - GOOS=linux OS=linux
+
+script:
+  - go build -o dm-${OS}
+
+deploy:
+  provider: releases
+  api_key:
+    secure: djmRTLmTxeVVyyLCyM0rclzTWd6rHsG7STCOgJriRHZKqKC2OMhYSyypVrKO17J+d2joN6tuA3dFVqBk10CZlFv9ls9rC2PPX1D1AROhIy1CNkGtnEuZNcKVk/V6r91VSxZg+jrc4Dw6v1TJc1YqJFHx9nwQxc23xemzbC0iSeSp9DAjY10lV1P4MdTM95hKkWI8JXHhxQ+2TRPyKSgBVEv1cOIqvOrNJZaqWFWCDIVVr2nqIp6zNYa7mE2O+ZQa3PyDFvARs5nUeL7TJA5h+RpGjqBjTHs8qk5x2M68nN4E9IHRdWvpd2xXI8Kg7+vRdkcB9eXVyfkSfbpdxZoY3hfTXRrrup6T5mxsTuVBH88iyo6Zy3HZ1HHfoCMItnaK5Qa5PwSs0Tn9bYqyJ04PXCUwoH8PysDcC2W/0Xm93K27/3oMHACU04C+lK1sx5LHO+GeUx5w9jq5+6QKa7GfHJLN1LyIQDhwl/SB9FQWN9N4Lt6MsKvLQi1zfJ2PitPSGaDBBYFll8XO1iODdH1WuT1TIM1L9+OI3gBFdHp94e3fpdb0maICdMIcEbsH8mvjBU05OmxBZMo8f2eigA6y96RiektEG4vjadOQy1nEzJ7bWjGsWC50QJNOZ5YCvHZT1V4UHwPvqepHsY8t/vlb2jNIibuT8wxFPmFlOmI6aaA=
+  file: dm
+  on:
+    repo: pwhelan/dm
+    tags: true
+  skip_cleanup: true
