@@ -16,3 +16,8 @@ Para exportar la configuracion de una maquina:
 Para importar una configuracion de una maquina (exportada con dm):
 
   $ dm import MACHINE < MACHINE.pem
+
+Para cargar la configuracion de una maquina en el shell actual:
+
+  $ eval $(dm env MACHINE) # bash
+  $ eval (dm env MACHINE) # fish
