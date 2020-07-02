@@ -7,17 +7,17 @@ remotamente a docker.
 
 Para listas las maquinas configuradas con dm:
 
-  $ dm ls
+    $ dm ls
 
 Para exportar la configuracion de una maquina:
 
-  $ dm export MACHINE > MACHINE.pem
+    $ dm export MACHINE > MACHINE.pem
 
 Para importar una configuracion de una maquina (exportada con dm):
 
-  $ dm import MACHINE < MACHINE.pem
+    $ dm import MACHINE < MACHINE.pem
 
 Para cargar la configuracion de una maquina en el shell actual:
 
-  $ eval $(dm env MACHINE) # bash
-  $ eval (dm env MACHINE) # fish
+    $ eval $(dm env MACHINE) # bash
+    $ eval (dm env MACHINE) # fish
