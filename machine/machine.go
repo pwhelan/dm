@@ -2,9 +2,11 @@ package machine
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+	
+	"github.com/kirsle/configdir"
 )
 
 type Machine struct {
@@ -13,8 +15,9 @@ type Machine struct {
 }
 
 func (m *Machine) Read(file os.FileInfo) error {
-	data, err := ioutil.ReadFile(fmt.Sprintf("%s/%s/config.json", 
-		"/home/pwhelan/.config/dm/machines", file.Name()))
+	configPath := configdir.LocalConfig("dm")
+	configFile := filepath.Join(configPath, "machines", file.Name(), "config.json")
+	data, err := ioutil.ReadFile(configFile)
 	if err != nil {
 		return err
 	}

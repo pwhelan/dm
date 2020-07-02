@@ -18,17 +18,19 @@ package cmd
 import (
 	"encoding/json"
 	"encoding/pem"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
-
+	"path/filepath"
+	
 	"github.com/spf13/cobra"
+	"github.com/kirsle/configdir"
 )
 
 func decodeFile(machine, fname string) (*pem.Block, error) {
-	data, err := ioutil.ReadFile(fmt.Sprintf("%s/%s/%s",
-		"/home/pwhelan/.config/dm/machines", machine, fname))
+	configPath := configdir.LocalConfig("dm")
+	filename := filepath.Join(configPath, "machines", machine, fname)
+	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
@@ -57,8 +59,12 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		configPath := configdir.LocalConfig("dm")
+		configPathMachines := filepath.Join(configPath, "machines")
 		s := &Config{}
 		var err error
+		
+		
 		s.CA, err = decodeFile(args[0], "ca.pem")
 		if err != nil {
 			log.Fatal(err)
@@ -71,8 +77,9 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			log.Fatal(err)
 		}
-		data, err := ioutil.ReadFile(fmt.Sprintf("%s/%s/%s",
-			"/home/pwhelan/.config/dm/machines", args[0], "config.json"))
+		
+		data, err := ioutil.ReadFile(filepath.Join(configPathMachines,
+			args[0], "config.json"))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -90,6 +97,7 @@ to quickly create a Cobra application.`,
 		if err := pem.Encode(os.Stdout, s.Key); err != nil {
 			log.Fatal(err)
 		}
+
 		data, err = json.Marshal(&s.Settings)
 		if err != nil {
 			log.Fatal(err)

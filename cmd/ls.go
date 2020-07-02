@@ -20,10 +20,12 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/pwhelan/dm/machine"
 
 	"github.com/spf13/cobra"
+	"github.com/kirsle/configdir"
 )
 
 func displaymachine(file os.FileInfo) {
@@ -31,7 +33,7 @@ func displaymachine(file os.FileInfo) {
 	if err := machine.Read(file); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%s\t%s\n", machine.Name, machine.URL)
+	fmt.Printf("%s\t%s\n", file.Name(), machine.URL)
 }
 
 // lsCmd represents the ls command
@@ -40,7 +42,10 @@ var lsCmd = &cobra.Command{
 	Short: "list machines.",
 	Long: `List all of the currently configured machines.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		files, err := ioutil.ReadDir("/home/pwhelan/.config/dm/machines")
+		configPath := configdir.LocalConfig("dm")
+		configPathMachines := filepath.Join(configPath, "machines")
+		
+		files, err := ioutil.ReadDir(configPathMachines)
 		if err != nil {
 			log.Fatal(err)
 		}

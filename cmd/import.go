@@ -17,22 +17,25 @@ package cmd
 
 import (
 	"encoding/pem"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"github.com/kirsle/configdir"
 )
 
 func dumpFile(machine, file string, data []byte) error {
-	return ioutil.WriteFile(fmt.Sprintf("%s/%s/%s",
-		"/home/pwhelan/.config/dm/machines", machine, file), data, 0600)
+	configPath := configdir.LocalConfig("dm")
+	configFile := filepath.Join(configPath, "machines", machine, file)
+	return ioutil.WriteFile(configFile, data, 0600)
 }
 
 func dumpBlock(machine, file string, data *pem.Block) error {
-	fd, err := os.Create(fmt.Sprintf("%s/%s/%s",
-		"/home/pwhelan/.config/dm/machines", machine, file))
+	configPath := configdir.LocalConfig("dm")
+	configFile := filepath.Join(configPath, "machines", machine, file)
+	fd, err := os.Create(configFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -50,8 +53,14 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		configPath := configdir.LocalConfig("dm")
+		configPathMachine := filepath.Join(configPath, "machines", args[0])
 		var data []byte
 		var block *pem.Block
+
+		if err := os.Mkdir(configPathMachine, 0700); err != nil {
+			log.Fatal(err)
+		}
 
 		data, err := ioutil.ReadAll(os.Stdin)
 		if err != nil {

@@ -20,10 +20,12 @@ import (
 	"log"
 	"os"
 	"path"
+	"path/filepath"
 
 	"github.com/pwhelan/dm/machine"
 
 	"github.com/spf13/cobra"
+	"github.com/kirsle/configdir"
 )
 
 func detectShell() string {
@@ -37,27 +39,28 @@ var envCmd = &cobra.Command{
 	Long:  `WIP ...`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var mach machine.Machine
-		file, err := os.Stat(fmt.Sprintf("%s/%s",
-			"/home/pwhelan/.config/dm/machines", args[0]))
+		configPath := configdir.LocalConfig("dm")
+		configDir := filepath.Join(configPath, "machines", args[0])
+		file, err := os.Stat(configDir)
 		if err != nil {
 			log.Fatal(err)
 		}
 		if err := mach.Read(file); err != nil {
 			log.Fatal(err)
 		}
+		
 		switch detectShell() {
 		case "fish":
 			fmt.Printf("set -gx DOCKER_TLS_VERIFY \"1\";\n")
 			fmt.Printf("set -gx DOCKER_HOST \"%s\";\n", mach.URL)
-			fmt.Printf("set -gx DOCKER_CERT_PATH \"%s/%s\";\n",
-				"/home/pwhelan/.config/dm/machines", file.Name())
+			fmt.Printf("set -gx DOCKER_CERT_PATH \"%s\";\n", configDir)
 			fmt.Printf("set -gx DOCKER_MACHINE_NAME \"%s\";\n",
 				mach.Name)
 		case "bash":
 			fmt.Printf("export DOCKER_TLS_VERIFY=\"1\";\n")
 			fmt.Printf("export DOCKER_HOST=\"%s\";\n", mach.URL)
-			fmt.Printf("export DOCKER_CERT_PATH=\"%s/%s\";\n",
-				"/home/pwhelan/.config/dm/machines", file.Name())
+			fmt.Printf("export DOCKER_CERT_PATH=\"%s\";\n",
+				configDir)
 			fmt.Printf("export DOCKER_MACHINE_NAME=\"%s\";\n",
 				mach.Name)
 		default:
