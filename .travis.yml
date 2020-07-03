@@ -9,7 +9,7 @@ env:
   - GOOS=linux OS=linux
 
 script:
-  - go build -o dm-${OS}
+  - env GOOS=${GOOS} go build -o dm-${OS}
 
 deploy:
   provider: releases
