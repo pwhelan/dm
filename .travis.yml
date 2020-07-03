@@ -3,13 +3,13 @@ language: go
 go:
   - 1.14
 
-env:
-  - GOOS=darwin OS=osx
-  - GOOS=windows OS=win64
-  - GOOS=linux OS=linux
+os:
+  - linux
+  - osx
+  - windows
 
 script:
-  - env GOOS=${GOOS} go build -o dm-${OS}
+  - go build -o dm-${GOOS}
 
 deploy:
   provider: releases
