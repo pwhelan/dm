@@ -54,9 +54,22 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		configPath := configdir.LocalConfig("dm")
-		configPathMachine := filepath.Join(configPath, "machines", args[0])
+		configPathMachines := filepath.Join(configPath, "machines")
+		configPathMachine := filepath.Join(configPathMachines, args[0])
 		var data []byte
 		var block *pem.Block
+
+		if _, err := os.Stat(configPath); err != nil {
+			if err := os.Mkdir(configPath, 0700); err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		if _, err := os.Stat(configPathMachines); err != nil {
+			if err := os.Mkdir(configPathMachines, 0700); err != nil {
+				log.Fatal(err)
+			}
+		}
 
 		if err := os.Mkdir(configPathMachine, 0700); err != nil {
 			log.Fatal(err)
