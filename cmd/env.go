@@ -28,6 +28,8 @@ import (
 	"github.com/kirsle/configdir"
 )
 
+var unset bool
+
 func detectShell() string {
 	return path.Base(os.Getenv("SHELL"))
 }
@@ -35,9 +37,32 @@ func detectShell() string {
 // envCmd represents the env command
 var envCmd = &cobra.Command{
 	Use:   "env",
-	Short: "Generate env config for a machine.",
-	Long:  `WIP ...`,
+	Short: "generate env config for a machine.",
+	Long:  `generate the environment variables to configure the use of a remote docker instance.
+
+an example:
+    bash$ eval $(dm env MACHINE_NAME)
+
+this would set the variables to access the docker machine MACHINE_NAME.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if (unset == true) {
+			switch detectShell() {
+			case "fish":
+				fmt.Println("set -e DOCKER_TLS_VERIFY;")
+				fmt.Println("set -e DOCKER_HOST;")
+				fmt.Println("set -e DOCKER_CERT_PATH;")
+				fmt.Println("set -e DOCKER_MACHINE_NAME;")
+			case "bash":
+				fmt.Println("unset DOCKER_TLS_VERIFY;")
+				fmt.Println("unset DOCKER_HOST;")
+				fmt.Println("unset DOCKER_CERT_PATH;")
+				fmt.Println("unset DOCKER_MACHINE_NAME;")
+			default:
+				log.Fatal("unable to detect shell")
+			}
+			return
+		}
+		
 		var mach machine.Machine
 		configPath := configdir.LocalConfig("dm")
 		configDir := filepath.Join(configPath, "machines", args[0])
@@ -70,6 +95,7 @@ var envCmd = &cobra.Command{
 }
 
 func init() {
+	envCmd.Flags().BoolVarP(&unset, "unset", "u", false, "unset environment variables for docker")
 	rootCmd.AddCommand(envCmd)
 
 	// Here you will define your flags and configuration settings.
