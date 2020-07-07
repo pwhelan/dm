@@ -9,7 +9,7 @@ os:
   - windows
 
 script:
-  - go build -o dm-${GOOS}
+  - go build -o dm-${TRAVIS_OS_NAME}
 
 deploy:
   provider: releases
