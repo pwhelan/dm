@@ -20,7 +20,7 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 
-	homedir "github.com/mitchellh/go-homedir"
+	//homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
 
@@ -29,16 +29,16 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "dm",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short: "dm: a slim downed version of docker-machine for handling docker instances.",
+	Long: `dm is a utility to specifically manage settings and certificates to connect
+to remote docker machines.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+A typical flow when receiving an exported configuration from a team member is:
+    bash$ dm import MACHINE_NAME < MACHINE_NAME.pem
+    bash$ eval $(dm env MACHINE_NAME).
+
+Your team member would export the configuration by using the export command:
+    bash$ dm export MACHINE_NAME > MACHINE_NAME.pem.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -57,15 +57,16 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.dm.yaml)")
+	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.dm.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+	/*
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
@@ -81,11 +82,14 @@ func initConfig() {
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".dm")
 	}
+	*/
 
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
+	/*
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+	*/
 }
